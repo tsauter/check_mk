@@ -5,7 +5,7 @@
 import dns.resolver
 import dns.exception
 import sys
-import netifaces
+import yaml
 
 print '<<<rbl_check>>>'
 
@@ -34,11 +34,11 @@ def check_rbl(ip, dnsbl):
 
 
 
-for interface in netifaces.interfaces():
-	if netifaces.AF_INET in netifaces.ifaddresses(interface):
-		for ip in map(lambda x: x['addr'], netifaces.ifaddresses(interface)[netifaces.AF_INET]):
-			for name in dnbl:
-				check_rbl(ip, name)
+data = yaml.load(open("/etc/check_mk/rbl_check.conf", "r"))
 
-for name in dnbl:
-	check_rbl("127.0.0.2", name)
+for ip in data["IPs"]:
+	for name in dnbl:
+		check_rbl(ip, name)
+
+#for name in dnbl:
+#	check_rbl("127.0.0.2", name)
